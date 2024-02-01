@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:task/screens/auth_screen.dart';
 import 'package:task/screens/login_view.dart';
-import 'package:task/screens/signup_screen.dart';
 import 'package:task/screens/splash_screen.dart';
 
 const String splashRoute = '/splash';
@@ -15,6 +14,5 @@ Map<String, WidgetBuilder> getRoutes() {
     splashRoute: (context) => SplashScreen(),
     authRoute: (context) => AuthScreen(),
     loginRoute: (context) => LoginScreen(),
-    signupRoute: (context) => SignupView(),
   };
 }

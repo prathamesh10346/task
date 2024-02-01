@@ -16,7 +16,6 @@ class TodoScreen extends StatefulWidget {
 
 class _TodoScreenState extends State<TodoScreen> {
   List<Todo> todos = [];
-
   bool _isLoading = true;
 
   @override
@@ -45,17 +44,18 @@ class _TodoScreenState extends State<TodoScreen> {
           _isLoading = false;
         });
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('Failed to load TODO list'),
-          backgroundColor: Colors.red,
-        ));
+        showSnackBar('Failed to load TODO list', Colors.red);
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text('Error: $e'),
-        backgroundColor: Colors.red,
-      ));
+      showSnackBar('Error: $e', Colors.red);
     }
+  }
+
+  void showSnackBar(String message, Color backgroundColor) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text(message),
+      backgroundColor: backgroundColor,
+    ));
   }
 
   void _addTaskToList(Map<String, dynamic> taskData) {
@@ -132,54 +132,7 @@ class _TodoScreenState extends State<TodoScreen> {
                     ),
                   ),
                   const SizedBox(height: 16.0),
-                  ListView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemCount: todos.length,
-                    itemBuilder: (context, index) {
-                      return ListTile(
-                        leading: Checkbox(
-                          side: MaterialStateBorderSide.resolveWith(
-                            (states) => BorderSide(
-                                width: 2.0,
-                                color: todos[index].completed
-                                    ? Colors.black
-                                    : const Color(0xFFE8E8E8)),
-                          ),
-                          checkColor: Colors.white,
-                          hoverColor: Colors.black,
-                          activeColor: Colors.black,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(4.0),
-                          ),
-                          value: todos[index].completed,
-                          onChanged: (value) {
-                            _updateTaskCompletion(index, value ?? false);
-                          },
-                        ),
-                        title: Text(
-                          todos[index].todo,
-                          style: todos[index].completed
-                              ? TextStyle(
-                                  color: Color(0xFF737373).withOpacity(0.2),
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.w500,
-                                  decoration: TextDecoration.lineThrough,
-                                  decorationThickness: 2,
-                                  decorationColor:
-                                      Color(0xFF737373).withOpacity(0.2),
-                                  decorationStyle: TextDecorationStyle.wavy)
-                              : const TextStyle(
-                                  color: Color(0xFF737373),
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.w500,
-                                  decoration: TextDecoration.none,
-                                ),
-                        ),
-                        subtitle: Text('Completed: ${todos[index].completed}'),
-                      );
-                    },
-                  ),
+                  _buildTodoList(),
                 ],
               ),
             ),
@@ -195,6 +148,64 @@ class _TodoScreenState extends State<TodoScreen> {
           color: Colors.white,
         ),
       ),
+    );
+  }
+
+  Widget _buildTodoList() {
+    return ListView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: todos.length,
+      itemBuilder: (context, index) {
+        return ListTile(
+          leading: _buildCheckbox(index),
+          title: _buildTodoTitle(index),
+          subtitle: Text('Completed: ${todos[index].completed}'),
+        );
+      },
+    );
+  }
+
+  Widget _buildCheckbox(int index) {
+    return Checkbox(
+      side: MaterialStateBorderSide.resolveWith(
+        (states) => BorderSide(
+            width: 2.0,
+            color: todos[index].completed
+                ? Colors.black
+                : const Color(0xFFE8E8E8)),
+      ),
+      checkColor: Colors.white,
+      hoverColor: Colors.black,
+      activeColor: Colors.black,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(4.0),
+      ),
+      value: todos[index].completed,
+      onChanged: (value) {
+        _updateTaskCompletion(index, value ?? false);
+      },
+    );
+  }
+
+  Widget _buildTodoTitle(int index) {
+    return Text(
+      todos[index].todo,
+      style: todos[index].completed
+          ? TextStyle(
+              color: Color(0xFF737373).withOpacity(0.2),
+              fontSize: 15,
+              fontWeight: FontWeight.w500,
+              decoration: TextDecoration.lineThrough,
+              decorationThickness: 2,
+              decorationColor: Color(0xFF737373).withOpacity(0.2),
+              decorationStyle: TextDecorationStyle.wavy)
+          : const TextStyle(
+              color: Color(0xFF737373),
+              fontSize: 15,
+              fontWeight: FontWeight.w500,
+              decoration: TextDecoration.none,
+            ),
     );
   }
 }
